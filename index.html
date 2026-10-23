@@ -12,23 +12,38 @@
 html,body{margin:0;min-height:100%;background:#FBDFE8}
 .page{--P:clamp(12px,min(4vw,4.5vh),56px);--G:clamp(10px,min(3.2vw,3.2vh),36px);height:100vh;height:100dvh;overflow:hidden;box-sizing:border-box;padding:var(--P) var(--P) calc(var(--P) + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;justify-content:center;align-items:center}
 .volv{width:100%;max-width:1000px;container-type:inline-size}
-.stage{--rsv:calc(2 * var(--P) + 3 * var(--G) + clamp(105px, 16vh, 150px));--u:min(calc(min(100vw - 2 * var(--P), 1000px) / 1576), calc((100vh - var(--rsv)) / 1681.4));position:relative;overflow:visible;margin:0 auto;width:calc(1576 * var(--u));height:calc(1681.4 * var(--u))}
+.stage{--fs:clamp(16px,3.4vh,30px);--rsv:calc(2 * var(--P) + 4 * var(--G) + 3.7 * var(--fs) + clamp(64px, 14vh, 96px));--u:min(calc(min(100vw - 2 * var(--P), 1000px) / 1576), calc((100vh - var(--rsv)) / 1681.4));position:relative;overflow:visible;margin:0 auto;width:calc(1576 * var(--u));height:calc(1681.4 * var(--u))}
 .scene{position:absolute;left:calc(-211.05 * var(--u));top:calc(-200.6 * var(--u));width:calc(2000 * var(--u));height:calc(2040 * var(--u))}
 .readout{margin-top:var(--G)}
 @supports (width: 1cqw) and (height: 1dvh){
   .page{--P:clamp(12px,min(4vw,4.5dvh),56px);--G:clamp(10px,min(3.2vw,3.2dvh),36px)}
-  .stage{--rsv:calc(2 * var(--P) + 3 * var(--G) + clamp(105px, 16dvh, 150px));--u:min(calc(100cqw / 1576), calc((100dvh - var(--rsv)) / 1681.4))}
+  .stage{--rsv:calc(2 * var(--P) + 4 * var(--G) + 3.7 * var(--fs) + clamp(64px, 14dvh, 96px));--u:min(calc(100cqw / 1576), calc((100dvh - var(--rsv)) / 1681.4))}
 }
 
+@media (max-aspect-ratio: 13/10) {
+  .page{--P:clamp(16px,min(5.4vw,5dvh),56px);--G:clamp(14px,min(4.8vw,3.8dvh),40px)}
+}
+.stage,.readout{--fs:clamp(17px,min(7cqw,4.6dvh),38px)}
+.sent{max-width:11.5em;margin:calc(var(--G) * 0.5) auto !important}
+.readout .shuffle{height:clamp(40px,11.5cqw,54px) !important;padding:0 clamp(26px,8cqw,40px) !important;font-size:clamp(12px,3.6cqw,16px) !important}
+.hint{font-size:clamp(9px,2.5cqw,12px) !important}
 @media (min-aspect-ratio: 13/10) {
   .volv{max-width:1500px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:calc(var(--G) * 2)}
   .stage{--rsv:0px;--u:min(calc(52cqw / 1576), calc((100dvh - 2 * var(--P)) / 1681.4));flex:none;margin:0}
   .readout{flex:0 1 34cqw;min-width:0;margin-top:0}
-  .sent{font-size:clamp(14px,min(3cqw,5dvh),42px) !important}
+  .sent{font-size:clamp(14px,min(3cqw,5dvh),42px) !important;max-width:none;margin:calc(var(--G) * 0.5) 0 !important}
   .readout .shuffle{height:clamp(28px,min(3.6cqw,5.5dvh),42px) !important;padding:0 clamp(16px,2.2cqw,34px) !important;font-size:clamp(9px,1.05cqw,13px) !important}
   .hint{font-size:clamp(7.5px,0.72cqw,9.5px) !important}
 }
 #typed.typing::after{content:"";position:absolute;width:2px;height:0.9em;margin:0.12em 0 0 1px;background:currentColor;opacity:.7}
+@media (min-aspect-ratio: 13/10) and (max-height: 300px) {
+  .page{--P:clamp(6px,min(3vw,4vh),12px);--G:clamp(5px,min(2vw,3vh),10px)}
+  .stage{--u:min(calc(46cqw / 1576), calc((100dvh - 2 * var(--P)) / 1681.4))}
+  .readout{flex:0 1 46cqw}
+  .hint{display:none}
+  .sent{font-size:clamp(5.5px,min(3.4cqw,7.5dvh),20px) !important;line-height:1.15 !important}
+  .readout .shuffle{height:clamp(14px,15dvh,30px) !important;padding:0 clamp(8px,3cqw,18px) !important;font-size:clamp(5px,5.5dvh,10px) !important;border-width:1px !important}
+}
 .shuffle:focus-visible{outline:3px solid #1A1316;outline-offset:4px}
 
 </style>
@@ -61,7 +76,7 @@ html,body{margin:0;min-height:100%;background:#FBDFE8}
 </div>
 </div>
 <div class="readout" style="display: flex; flex-direction: column; align-items: center; gap: var(--G); padding: 0; text-align: center">
-<div id="sentence" class="sent" style="margin: 0; font-family: Elagern, Georgia, serif; font-size: clamp(15px, min(2.3cqw, 2.8dvh), 24px); line-height: 1.2; letter-spacing: 0.03em; text-wrap: balance; display: flex; align-items: center; justify-content: center"><div id="line" style="width: 100%"><span id="typed"></span><span id="rest" aria-hidden="true" style="visibility: hidden"></span></div></div>
+<div id="sentence" class="sent" style="margin: 0; font-family: Elagern, Georgia, serif; font-size: var(--fs); line-height: 1.2; letter-spacing: 0.03em; text-wrap: balance; display: flex; align-items: center; justify-content: center"><div id="line" style="width: 100%"><span id="typed"></span><span id="rest" aria-hidden="true" style="visibility: hidden"></span></div></div>
 <span id="sr" aria-live="polite" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap"></span>
 <button id="shuffle" class="shuffle" type="button" style="height: clamp(36px, 3.6cqw, 44px); padding: 0 clamp(24px, 3cqw, 34px); border-radius: 999px; border: 1.5px solid #FAC0D2; background: #FAC0D2; color: #1A1316; font-family: Picaro, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(11px, 1.3cqw, 14px); letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer">Shuffle</button>
 <div class="hint" style="margin: 0; font-size: clamp(8px, 0.95cqw, 10px); letter-spacing: 0.16em; text-transform: uppercase; color: #5A4A50">Drag a ring to spin it</div>
