@@ -12,9 +12,19 @@
 html,body{margin:0;min-height:100%;background:#FBDFE8}
 .page{height:100vh;height:100dvh;overflow:hidden;box-sizing:border-box;padding:10px 12px calc(10px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;justify-content:center;align-items:center}
 .volv{width:100%;max-width:1000px;container-type:inline-size}
-.stage{--rsv:clamp(165px, 26vh, 250px);--u:min(calc(min(100vw - 32px, 1000px) / 1620), calc((100vh - var(--rsv)) / 1730));position:relative;overflow:visible;margin:0 auto;width:calc(1620 * var(--u));height:calc(1730 * var(--u))}
+.stage{--rsv:clamp(190px, 29vh, 280px);--u:min(calc(min(100vw - 32px, 1000px) / 1620), calc((100vh - var(--rsv)) / 1730));position:relative;overflow:visible;margin:0 auto;width:calc(1620 * var(--u));height:calc(1730 * var(--u))}
 .scene{position:absolute;left:calc(-190 * var(--u));top:calc(-180 * var(--u));width:calc(2000 * var(--u));height:calc(2040 * var(--u))}
-@supports (width: 1cqw) and (height: 1dvh){ .stage{--rsv:clamp(165px, 26dvh, 250px);--u:min(calc(100cqw / 1620), calc((100dvh - var(--rsv)) / 1730))} }
+@supports (width: 1cqw) and (height: 1dvh){ .stage{--rsv:clamp(190px, 29dvh, 280px);--u:min(calc(100cqw / 1620), calc((100dvh - var(--rsv)) / 1730))} }
+
+@media (min-aspect-ratio: 13/10) {
+  .page{padding:clamp(14px,5dvh,64px) clamp(16px,4vw,80px)}
+  .volv{max-width:1500px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:clamp(12px,3vw,56px)}
+  .stage{--rsv:0px;--u:min(calc(52cqw / 1620), calc((100dvh - clamp(28px, 10dvh, 128px)) / 1730));flex:none;margin:0}
+  .readout{flex:0 1 34cqw;min-width:0;padding:0 !important;gap:clamp(14px,4dvh,44px) !important}
+  .sent{font-size:clamp(14px,min(3cqw,5dvh),42px) !important}
+  .readout .shuffle{height:clamp(28px,min(3.6cqw,5.5dvh),42px) !important;padding:0 clamp(16px,2.2cqw,34px) !important;font-size:clamp(9px,1.05cqw,13px) !important}
+  .hint{font-size:clamp(7.5px,0.72cqw,9.5px) !important;margin-top:calc(clamp(14px,4dvh,44px) * -0.6) !important}
+}
 .shuffle:focus-visible{outline:3px solid #1A1316;outline-offset:4px}
 
 </style>
@@ -46,10 +56,10 @@ html,body{margin:0;min-height:100%;background:#FBDFE8}
 </div>
 </div>
 </div>
-<div style="display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.8dvh, 22px); padding: clamp(8px, 1.8dvh, 22px) 8px 0; text-align: center">
-<p id="sentence" aria-live="polite" style="margin: 0; font-family: Elagern, Georgia, serif; font-size: clamp(15px, min(2.3cqw, 2.8dvh), 24px); line-height: 1.2; letter-spacing: 0.03em; text-wrap: balance"></p>
+<div class="readout" style="display: flex; flex-direction: column; align-items: center; gap: clamp(12px, 2.6dvh, 30px); padding: clamp(12px, 2.6dvh, 30px) 8px 0; text-align: center">
+<p id="sentence" class="sent" aria-live="polite" style="margin: 0; font-family: Elagern, Georgia, serif; font-size: clamp(15px, min(2.3cqw, 2.8dvh), 24px); line-height: 1.2; letter-spacing: 0.03em; text-wrap: balance"></p>
 <button id="shuffle" class="shuffle" type="button" style="height: clamp(36px, 3.6cqw, 44px); padding: 0 clamp(24px, 3cqw, 34px); border-radius: 999px; border: 1.5px solid #FAC0D2; background: #FAC0D2; color: #1A1316; font-family: Picaro, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(11px, 1.3cqw, 14px); letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer">Shuffle</button>
-<div style="font-size: clamp(9px, 1.1cqw, 12px); letter-spacing: 0.16em; text-transform: uppercase; color: #5A4A50">Drag a ring to spin it</div>
+<div class="hint" style="margin-top: calc(clamp(12px, 2.6dvh, 30px) * -0.6); font-size: clamp(8px, 0.95cqw, 10px); letter-spacing: 0.16em; text-transform: uppercase; color: #5A4A50">Drag a ring to spin it</div>
 </div>
 </div>
 </div>
