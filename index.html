@@ -36,7 +36,7 @@ html,body{margin:0;min-height:100%;background:#FBDFE8}
   .hint{font-size:clamp(7.5px,0.72cqw,9.5px) !important}
   .copy{font-size:clamp(7.5px,0.72cqw,9.5px) !important}
 }
-#typed.typing::after{content:"";position:absolute;width:2px;height:0.9em;margin:0.12em 0 0 1px;background:currentColor;opacity:.7}
+.sv.typing::after{content:"";position:absolute;width:2px;height:0.9em;margin:0.12em 0 0 1px;background:currentColor;opacity:.7}
 @media (min-aspect-ratio: 13/10) and (max-height: 300px) {
   .page{--P:clamp(6px,min(3vw,4vh),12px);--G:clamp(5px,min(2vw,3vh),10px)}
   .stage{--u:min(calc(46cqw / 1576), calc((100dvh - 2 * var(--P)) / 1681.4))}
@@ -84,7 +84,7 @@ html,body{margin:0;min-height:100%;background:#FBDFE8}
 </div>
 </div>
 <div class="readout" style="display: flex; flex-direction: column; align-items: center; gap: var(--G); padding: 0; text-align: center">
-<div id="sentence" class="sent" style="margin: 0; font-family: Elagern, Georgia, serif; font-size: var(--fs); line-height: 1.2; letter-spacing: 0.03em; text-wrap: balance; display: flex; align-items: center; justify-content: center"><div id="line" style="width: 100%"><span id="typed"></span><span id="rest" aria-hidden="true" style="visibility: hidden"></span></div></div>
+<div id="sentence" class="sent" style="margin: 0; font-family: Elagern, Georgia, serif; font-size: var(--fs); line-height: 1.2; letter-spacing: 0.03em; text-wrap: balance; display: flex; align-items: center; justify-content: center"><div id="line" style="width: 100%"><span class="sv" id="sv0"></span><span id="sh0" aria-hidden="true" style="visibility: hidden"></span><span class="sv" id="sv1"></span><span id="sh1" aria-hidden="true" style="visibility: hidden"></span><span class="sv" id="sv2"></span><span id="sh2" aria-hidden="true" style="visibility: hidden"></span><span class="sv" id="sv3"></span><span id="sh3" aria-hidden="true" style="visibility: hidden"></span></div></div>
 <span id="sr" aria-live="polite" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap"></span>
 <button id="shuffle" class="shuffle" type="button" style="height: clamp(36px, 3.6cqw, 44px); padding: 0 clamp(24px, 3cqw, 34px); border-radius: 999px; border: 1.5px solid #FAC0D2; background: #FAC0D2; color: #1A1316; font-family: Picaro, 'Helvetica Neue', Arial, sans-serif; font-size: clamp(11px, 1.3cqw, 14px); letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer">Shuffle</button>
 <div class="hint" style="margin: 0; font-size: clamp(8px, 0.95cqw, 10px); letter-spacing: 0.16em; text-transform: uppercase; color: #5A4A50">Drag a ring to spin it</div>
@@ -122,31 +122,54 @@ var drag = null;
 function norm(x){ return ((x + 180) % 360 + 360) % 360 - 180; }
 function nearest(i,a){ var phi=WHEELS[i].phi,best=0,bd=1e9; for(var k=0;k<phi.length;k++){ var d=Math.abs(norm(phi[k]+a-90)); if(d<bd){bd=d;best=k;} } return best; }
 function alignTo(i,k,a){ return a + norm((90 - WHEELS[i].phi[k]) - a); }
-var typedEl = document.getElementById('typed'), restEl = document.getElementById('rest'), srEl = document.getElementById('sr');
-var shown = '', target = '', typeTimer = null;
+var srEl = document.getElementById('sr');
+var segV = [0,1,2,3].map(function(i){ return document.getElementById('sv' + i); });
+var segH = [0,1,2,3].map(function(i){ return document.getElementById('sh' + i); });
+var segShown = ['','','',''], segTarget = ['','','',''], typeTimer = null;
 var reduceMotion = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-function paintText(){
-  typedEl.textContent = shown;
-  restEl.textContent = target.slice(0,shown.length) === shown ? target.slice(shown.length) : '';
-  typedEl.className = (shown === target) ? '' : 'typing';
+function paintSeg(i){
+  var s = segShown[i], t = segTarget[i];
+  segV[i].textContent = s;
+  segH[i].textContent = t.slice(0, s.length) === s ? t.slice(s.length) : '';
+}
+function activeSeg(){
+  for (var i = 0; i < 4; i++) if (segShown[i] !== segTarget[i]) return i;
+  return -1;
+}
+function paintCaret(){
+  var a = activeSeg();
+  for (var i = 0; i < 4; i++) segV[i].className = 'sv' + (i === a ? ' typing' : '');
 }
 function tick(){
-  if (shown.length < target.length) shown = target.slice(0, shown.length + 1);
-  paintText();
-  if (shown === target) { clearInterval(typeTimer); typeTimer = null; }
+  var i = activeSeg();
+  if (i >= 0) { segShown[i] = segTarget[i].slice(0, segShown[i].length + 1); paintSeg(i); }
+  paintCaret();
+  if (activeSeg() < 0) { clearInterval(typeTimer); typeTimer = null; }
 }
-function setTarget(t,typeMs){
-  if (t === target) return;
-  var c = 0; while (c < shown.length && c < t.length && shown.charAt(c) === t.charAt(c)) c++;
-  shown = shown.slice(0, c);
-  target = t; srEl.textContent = t;
-  if (reduceMotion) { shown = t; paintText(); return; }
-  paintText();
-  var remaining = Math.max(1, t.length - shown.length);
-  var every = typeMs ? Math.max(20, Math.min(120, typeMs / remaining)) : 26;
+function setSegments(arr, typeMs, retypeAll){
+  var changed = false;
+  for (var i = 0; i < 4; i++) {
+    if (retypeAll) segShown[i] = '';
+    if (arr[i] === segTarget[i] && !retypeAll) continue;
+    changed = true;
+    var c = 0, s = segShown[i], t = arr[i];
+    while (c < s.length && c < t.length && s.charAt(c) === t.charAt(c)) c++;
+    segShown[i] = reduceMotion ? t : s.slice(0, c);
+    segTarget[i] = t;
+    paintSeg(i);
+  }
+  if (!changed) return;
+  srEl.textContent = segTarget.join('');
+  paintCaret();
+  if (activeSeg() < 0) return;
+  var remaining = 0;
+  for (var k = 0; k < 4; k++) remaining += Math.max(0, segTarget[k].length - segShown[k].length);
+  remaining = Math.max(1, remaining);
+  var every = typeMs ? Math.max(20, Math.min(120, typeMs / remaining)) : 52;
   if (typeTimer) clearInterval(typeTimer);
   typeTimer = setInterval(tick, every);
 }
+
 function reserveSentence(){
   var outer = document.getElementById('sentence'), line = document.getElementById('line');
   function longest(i){ return WHEELS[i].words.reduce(function(a,b){ return b.length > a.length ? b : a; }, ''); }
@@ -166,8 +189,13 @@ function render(dragging,dur,instant){
     img.style.transform = 'rotate(' + angles[i] + 'deg)';
   });
   var w = WHEELS.map(function(wh,i){ return wh.words[nearest(i,angles[i])]; });
-  var t = (w[0] + ' ' + w[1] + ' with ' + w[2] + ' ' + w[3]).toLowerCase();
-  setTarget(t.charAt(0).toUpperCase() + t.slice(1) + '.', dur ? Math.max.apply(null,dur) * 0.9 : 0);
+  var v0 = w[0].toLowerCase();
+  setSegments([
+    v0.charAt(0).toUpperCase() + v0.slice(1),
+    ' ' + w[1].toLowerCase(),
+    ' with ' + w[2].toLowerCase(),
+    ' ' + w[3].toLowerCase() + '.'
+  ], dur ? Math.max.apply(null,dur) * 0.9 : 0, !!dur);
 }
 function hitTest(px,py){
   var Dx=850,Dy=1248,Cx=850,Cy=838.5, ux=(px-Dx)*2, uy=(py-Dy)*2;
