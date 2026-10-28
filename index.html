@@ -48,6 +48,9 @@ html,body{margin:0;min-height:100%;background:#FBDFE8}
   .readout .shuffle{height:clamp(14px,15dvh,30px) !important;padding:0 clamp(8px,3cqw,18px) !important;font-size:clamp(5px,5.5dvh,10px) !important;border-width:1px !important}
 }
 .copy{--E:clamp(10px,2.4vw,16px);position:absolute;left:var(--E);right:auto;bottom:calc(env(safe-area-inset-bottom, 0px) + var(--E));text-align:left;font-family:Picaro,'Helvetica Neue',Arial,sans-serif;font-size:clamp(9px,2.5cqw,12px);letter-spacing:0.16em;text-transform:uppercase;color:#5A4A50;opacity:0.3;pointer-events:none}
+@media (max-aspect-ratio: 13/10) {
+  .copy{left:0;right:0;text-align:center}
+}
 .shuffle:focus-visible{outline:3px solid #1A1316;outline-offset:4px}
 
 </style>
